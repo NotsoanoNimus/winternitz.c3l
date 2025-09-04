@@ -5,7 +5,7 @@
 // A C3 implementation of Winternitz One-Time Signatures (NOT the "plus" variant used in XMSS).
 //
 <*
- @require @in(W, 4, 16, 256, 65536, 4294967296) : `The Winternitz parameter must be 4, 16, 256, 65536, or 4294967296 (to log2: 2, 4, 8, 16, 32)`
+ @require @in(W, 4, 16, 256, 65536) : `The Winternitz parameter must be 4, 16, 256, 65536 (to log2: 2, 4, 8, 16)`
  @require types::is_int($typeof(N)) &&& N > 0 : `N must be a positive integer`
  @require (N * 8) % math::@intlog2(W) == 0 : `The bit-size of N (8N) must be an even multiple of log2(W); usually this is a hash digest's length`
 *>
@@ -33,10 +33,6 @@ const uint128 BITMASK @local = W - 1;   // W = 4 -> 0b11, W = 16 -> 0b1111, W = 
 // ---
 // N = 32, W = 65536, LEN_S = 16,  LEN_C = 2, LEN = 18
 // N = 64, W = 65536, LEN_S = 32,  LEN_C = 2, LEN = 34
-// ---
-// (this is absurd ha)
-// N = 32, W = 4294967296, LEN_S = 8,  LEN_C = 2, LEN = 10
-// N = 64, W = 4294967296, LEN_S = 16, LEN_C = 2, LEN = 18
 // -----------------------------------------------------------
 
 alias DigestFn = fn char[N] (char[]);
@@ -249,8 +245,6 @@ alias WinternitzResult_p8_n32 = $typefrom(sigtype(8, 32));
 alias WinternitzResult_p8_n64 = $typefrom(sigtype(8, 64));
 alias WinternitzResult_p16_n32 = $typefrom(sigtype(16, 32));
 alias WinternitzResult_p16_n64 = $typefrom(sigtype(16, 64));
-alias WinternitzResult_p32_n32 = $typefrom(sigtype(32, 32));
-alias WinternitzResult_p32_n64 = $typefrom(sigtype(32, 64));
 
 alias WinternitzSha256 = WinternitzResult_p8_n32;
 alias WinternitzSha512 = WinternitzResult_p8_n64;
@@ -258,7 +252,7 @@ alias WinternitzShake128 = WinternitzSha256;
 alias WinternitzShake256 = WinternitzSha256;
 
 <*
- @require @in($power, 2, 4, 8, 16, 32) : "The power must be 2, 4, 8, 16, or 32"
+ @require @in($power, 2, 4, 8, 16) : "The power must be 2, 4, 8, 16"
  @require @in($digest_size, 32, 64) : "The digest length must be 32 or 64"
  @require digest.len == $digest_size : "The compile-time digest size must be the same as the length of the digest field. Are you trying to use a hash size larger than 32 bytes?"
  @require $defined($typefrom(digest_fn($digest_size)) b = h) : "The hash function `h` must be the correct type and size"
